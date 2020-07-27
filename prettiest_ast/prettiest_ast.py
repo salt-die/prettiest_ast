@@ -39,7 +39,12 @@ def stringify(tree, indent):
         yield from (pre + line for pre, line in zip(prefix, stringify(attr, indent)))
 
 def formatast(code, indent=DEFAULT_INDENT):
+    """Returns a string of the parsed code as a nicely formatted tree.
+    """
     body = ast.parse(code).body
     return '\n'.join(line for body_part in body for line in stringify(body_part, indent))
 
-def ppast(code, indent=DEFAULT_INDENT): print(formatast(code, indent))
+def ppast(code, indent=DEFAULT_INDENT):
+    """Prints `formatast(code, indent)`
+    """
+    print(formatast(code, indent))
