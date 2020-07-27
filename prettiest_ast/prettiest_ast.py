@@ -2,7 +2,7 @@ import ast
 import re
 
 NAME_RE = re.compile('[.]([A-Za-z]+)[ ]')
-DEFAULT = 3
+DEFAULT_INDENT = 3
 LINE_CHRS = '├─', '│ ', '╰─', '  '
 
 def flatten(iterable):
@@ -15,7 +15,7 @@ def flatten(iterable):
 def snake(head, tail):
     yield head
     while 1: yield tail
-    
+
 def prefixes(nfields, indent):
     head, tail, last_head, last_tail = (a + b * (indent - 1) for a, b in LINE_CHRS)
     for _ in range(nfields - 1):
@@ -38,8 +38,8 @@ def stringify(tree, indent):
     for prefix, attr in zip(prefixes(len(fields), indent), fields):
         yield from (pre + line for pre, line in zip(prefix, stringify(attr, indent)))
 
-def pformat(code, indent=DEFAULT):
+def formatast(code, indent=DEFAULT_INDENT):
     body = ast.parse(code).body
     return '\n'.join(line for body_part in body for line in stringify(body_part, indent))
 
-def pp(code, indent=DEFAULT): print(pformat(code, indent))
+def ppast(code, indent=DEFAULT_INDENT): print(formatast(code, indent))
