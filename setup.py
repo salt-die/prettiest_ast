@@ -13,6 +13,6 @@ setup(name='prettiest_ast',
       author_email='saltdie.py@gmail.com',
       license='MIT',
       packages=['prettiest_ast'],
-      description='a pretty printer for abstract syntax trees',
+      description='A simple pretty printer for abstract syntax trees.',
       long_description=long_description,
       long_description_content_type='text/markdown')
