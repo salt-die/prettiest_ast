@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='prettiest_ast',
-      version='0.0.1.dev1',
+      version='0.0.1.dev2',
       url='https://github.com/salt-die/prettiest_ast',
       author='salt-die',
       author_email='saltdie.py@gmail.com',
