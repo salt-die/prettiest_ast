@@ -3,7 +3,7 @@ import re
 
 NAME_RE = re.compile('[.]([A-Za-z]+)[ ]')
 STYLES = {
-    'light': ('├─', '│ ', '╰─','  '),
+    'light': ('├─', '│ ', '╰─', '  '),
 }
 CONTEXTS = Load, Store, Delete
 
