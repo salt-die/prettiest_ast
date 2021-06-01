@@ -1,7 +1,5 @@
 from ast import AST, parse, iter_fields, iter_child_nodes, Load, Store, Delete
-import re
 
-NAME_RE = re.compile('[.]([A-Za-z]+)[ ]')
 STYLES = {
     'light': ('├─', '│ ', '╰─', '  '),
 }
