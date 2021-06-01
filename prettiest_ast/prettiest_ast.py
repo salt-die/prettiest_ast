@@ -1,50 +1,43 @@
-import ast
+from ast import AST, parse, iter_fields, iter_child_nodes, Load, Store, Delete
 import re
 
 NAME_RE = re.compile('[.]([A-Za-z]+)[ ]')
-DEFAULT_INDENT = 3
-LINE_CHRS = '├─', '│ ', '╰─', '  '
+STYLES = {
+    'light': ('├─', '│ ', '╰─','  '),
+}
+CONTEXTS = Load, Store, Delete
 
-def flatten(iterable):
-    for item in iterable:
-        if isinstance(item, list):
-            yield from item
-        else:
-            yield item
+def snake(head, tail, text):
+    first, *rest = text
+    yield head + first
+    yield from (tail + line for line in rest)
 
-def snake(head, tail):
-    yield head
-    while 1: yield tail
+def stringify(node, skip_contexts, *prefixes):
+    fields = ', '.join(f'{fieldname}={value!r}' for fieldname, value in iter_fields(node) if fieldname in ('id', 'value') and not isinstance(value, AST))
+    yield f'{type(node).__name__}' + (f'({fields})' if fields else '')
 
-def prefixes(nfields, indent):
-    head, tail, last_head, last_tail = (a + b * (indent - 1) for a, b in LINE_CHRS)
-    for _ in range(nfields - 1):
-        yield snake(head, tail)
-    yield snake(last_head, last_tail)
+    HEAD, TAIL, LAST_HEAD, LAST_TAIL = prefixes
 
-def stringify(tree, indent):
-    if not isinstance(tree, ast.AST):
-        yield str(tree)
+    children = list(child for child in iter_child_nodes(node) if not skip_contexts or not isinstance(child, CONTEXTS))
+    if not children:
         return
 
-    leaf_name = NAME_RE.search(str(tree)).group(1)
-    yield leaf_name
+    if len(children) > 1:
+        *rest, last = children
+        for child in rest:
+            yield from snake(HEAD, TAIL, stringify(child, skip_contexts, *prefixes))
+    else:
+        last, = children
 
-    # Put quotes around strings if they're from `value` fields and skip non-`value` fields whose attr is None
-    fields = (f"'{attr}'" if isinstance(attr, str) and field == 'value' else attr
-              for field in tree._fields if (attr := getattr(tree, field)) is not None or field == 'value')
-    fields = tuple(flatten(fields))
+    yield from snake(LAST_HEAD, LAST_TAIL, stringify(last, skip_contexts, *prefixes))
 
-    for prefix, attr in zip(prefixes(len(fields), indent), fields):
-        yield from (pre + line for pre, line in zip(prefix, stringify(attr, indent)))
-
-def formatast(code, indent=DEFAULT_INDENT):
+def format_ast(code, indent=4, style='light', skip_contexts=True):
     """Returns a string of the parsed code as a nicely formatted tree.
     """
-    body = ast.parse(code).body
-    return '\n'.join(line for body_part in body for line in stringify(body_part, indent))
+    prefixes = (line + continuation * (indent - 1) for line, continuation in STYLES[style])
+    return '\n'.join(stringify(parse(code), skip_contexts, *prefixes))
 
-def ppast(code, indent=DEFAULT_INDENT):
-    """Prints `formatast(code, indent)`
+def pp_ast(code, indent=4, style='light', skip_contexts=True):
+    """Prints `format_ast(code, indent)`
     """
-    print(formatast(code, indent))
+    print(format_ast(code, indent, style))
