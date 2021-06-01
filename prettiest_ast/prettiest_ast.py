@@ -20,12 +20,9 @@ def stringify(node, skip_contexts, *prefixes):
 
     HEAD, TAIL, LAST_HEAD, LAST_TAIL = prefixes
 
-    if len(children) > 1:
-        *rest, last = children
-        for child in rest:
-            yield from snake(HEAD, TAIL, stringify(child, skip_contexts, *prefixes))
-    else:
-        last, = children
+    *rest, last = children
+    for child in rest:
+        yield from snake(HEAD, TAIL, stringify(child, skip_contexts, *prefixes))
 
     yield from snake(LAST_HEAD, LAST_TAIL, stringify(last, skip_contexts, *prefixes))
 
