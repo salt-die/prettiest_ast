@@ -14,11 +14,11 @@ def stringify(node, skip_contexts, *prefixes):
     fields = ', '.join(f'{fieldname}={value!r}' for fieldname, value in iter_fields(node) if fieldname in ('id', 'value') and not isinstance(value, AST))
     yield f'{type(node).__name__}' + (f'({fields})' if fields else '')
 
-    HEAD, TAIL, LAST_HEAD, LAST_TAIL = prefixes
-
     children = list(child for child in iter_child_nodes(node) if not skip_contexts or not isinstance(child, CONTEXTS))
     if not children:
         return
+
+    HEAD, TAIL, LAST_HEAD, LAST_TAIL = prefixes
 
     if len(children) > 1:
         *rest, last = children
