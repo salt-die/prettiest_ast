@@ -35,4 +35,4 @@ def format_ast(code, indent=4, style='light', skip_contexts=True):
 def pp_ast(code, indent=4, style='light', skip_contexts=True):
     """Prints `format_ast(code, indent)`
     """
-    print(format_ast(code, indent, style))
+    print(format_ast(code, indent, style, skip_contexts))
